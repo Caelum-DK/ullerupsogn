@@ -1,571 +1,278 @@
 <?php
-/*
-Author: Eddie Machado
-URL: htp://themble.com/bones/
-
-This is where you can drop your custom functions or
-just edit things like thumbnail sizes, header images, 
-sidebars, comments, ect.
-*/
-
-// Get Bones Core Up & Running!
-require_once('library/bones.php');            // core functions (don't remove)
-require_once('library/plugins.php');          // plugins & extra functions (optional)
-require_once('library/custom-post-type.php'); // custom post type example
-
-// Options panel
-require_once('library/options-panel.php');
-
-// Shortcodes
-require_once('library/shortcodes.php');
-
-// Admin Functions (commented out by default)
-// require_once('library/admin.php');         // custom admin functions
-
-// Custom Backend Footer
-function bones_custom_admin_footer() {
-	echo '<span id="footer-thankyou">Developed by <a href="http://320press.com" target="_blank">320press</a></span>. Built using <a href="http://themble.com/bones" target="_blank">Bones</a>.';
+function reverie_setup() {
+	// Add language supports. Please note that Reverie Framework does not include language files.
+	load_theme_textdomain('reverie', get_template_directory() . '/lang');
+	
+	// Add post thumbnail supports. http://codex.wordpress.org/Post_Thumbnails
+	add_theme_support('post-thumbnails');
+	// set_post_thumbnail_size(150, 150, false);
+	
+	// Add post formarts supports. http://codex.wordpress.org/Post_Formats
+	add_theme_support('post-formats', array('aside', 'gallery', 'link', 'image', 'quote', 'status', 'video', 'audio', 'chat'));
+	
+	// Add menu supports. http://codex.wordpress.org/Function_Reference/register_nav_menus
+	add_theme_support('menus');
+	register_nav_menus(array(
+		'primary_navigation' => __('Primary Navigation', 'reverie'),
+		'utility_navigation' => __('Utility Navigation', 'reverie')
+	));	
 }
+add_action('after_setup_theme', 'reverie_setup');
 
-// adding it to the admin area
-add_filter('admin_footer_text', 'bones_custom_admin_footer');
-
-/************* THUMBNAIL SIZE OPTIONS *************/
-
-// Thumbnail sizes
-add_image_size( 'wpf-featured', 639, 300, true );
-add_image_size ( 'wpf-home-featured', 970, 364, true );
-add_image_size( 'bones-thumb-600', 600, 150, false );
-add_image_size( 'bones-thumb-300', 300, 100, true );
-/* 
-to add more sizes, simply copy a line from above 
-and change the dimensions & name. As long as you
-upload a "featured image" as large as the biggest
-set width or height, all the other sizes will be
-auto-cropped.
-
-To call a different size, simply change the text
-inside the thumbnail function.
-
-For example, to call the 300 x 300 sized image, 
-we would use the function:
-<?php the_post_thumbnail( 'bones-thumb-300' ); ?>
-for the 600 x 100 image:
-<?php the_post_thumbnail( 'bones-thumb-600' ); ?>
-
-You can change the names and dimensions to whatever
-you like. Enjoy!
-*/
-
-/************* ACTIVE SIDEBARS ********************/
-
-// Sidebars & Widgetizes Areas
-function bones_register_sidebars() {
-    register_sidebar(array(
-    	'id' => 'sidebar1',
-    	'name' => 'Main Sidebar',
-    	'description' => 'Used on every page BUT the homepage page template.',
-    	'before_widget' => '<div id="%1$s" class="widget %2$s">',
-    	'after_widget' => '</div>',
-    	'before_title' => '<h4 class="widgettitle">',
-    	'after_title' => '</h4>',
-    ));
+// Enqueue for header and footer, thanks to flickapix on Github.
+// Enqueue css files
+function reverie_css() {
+  if ( !is_admin() ) {
+  
+     wp_register_style( 'foundation',get_template_directory_uri() . '/css/foundation.css', false );
+     wp_enqueue_style( 'foundation' );
     
-    register_sidebar(array(
-    	'id' => 'sidebar2',
-    	'name' => 'Homepage Sidebar',
-    	'description' => 'Used only on the homepage page template.',
-    	'before_widget' => '<div id="%1$s" class="widget %2$s">',
-    	'after_widget' => '</div>',
-    	'before_title' => '<h4 class="widgettitle">',
-    	'after_title' => '</h4>',
-    ));
-    
-    /* 
-    to add more sidebars or widgetized areas, just copy
-    and edit the above sidebar code. In order to call 
-    your new sidebar just use the following code:
-    
-    Just change the name to whatever your new
-    sidebar's id is, for example:
-    
-    
-    
-    To call the sidebar in your template, you can just copy
-    the sidebar.php file and rename it to your sidebar's name.
-    So using the above example, it would be:
-    sidebar-sidebar2.php
-    
-    */
-} // don't remove this bracket!
-
-/************* ENQUEUE CSS AND JS *****************/
-
-function theme_styles()  
-{ 
-    // Bring in Open Sans from Google fonts
-    wp_register_style( 'open-sans', 'http://fonts.googleapis.com/css?family=Open+Sans:300,800');
-    // This is the compiled css file from SCSS
-    wp_register_style( 'foundation-app', get_template_directory_uri() . '/stylesheets/app.css', array(), '3.0', 'all' );
-    
-    wp_enqueue_style( 'open-sans' );
-    wp_enqueue_style( 'foundation-app' );
-}
-
-add_action('wp_enqueue_scripts', 'theme_styles');
-
-/************* ENQUEUE JS *************************/
-
-/* pull jquery from google's CDN. If it's not available, grab the local copy. Code from wp.tutsplus.com :-) */
-
-$url = 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'; // the URL to check against  
-$test_url = @fopen($url,'r'); // test parameters  
-if( $test_url !== false ) { // test if the URL exists  
-
-    function load_external_jQuery() { // load external file  
-        wp_deregister_script( 'jquery' ); // deregisters the default WordPress jQuery  
-        wp_register_script('jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'); // register the external file  
-        wp_enqueue_script('jquery'); // enqueue the external file  
-    }  
-
-    add_action('wp_enqueue_scripts', 'load_external_jQuery'); // initiate the function  
-} else {  
-
-    function load_local_jQuery() {  
-        wp_deregister_script('jquery'); // initiate the function  
-        wp_register_script('jquery', bloginfo('template_url').'/javascripts/jquery.min.js', __FILE__, false, '1.7.2', true); // register the local file  
-        wp_enqueue_script('jquery'); // enqueue the local file  
-    }  
-
-    add_action('wp_enqueue_scripts', 'load_local_jQuery'); // initiate the function  
+     wp_register_style( 'app',get_template_directory_uri() . '/css/app.css', false );
+     wp_enqueue_style( 'app' );
+     
+     wp_register_style( 'offcanvas',get_template_directory_uri() . '/css/offcanvas.css', false );
+     wp_enqueue_style( 'offcanvas' );
+     
+     // Load style.css to allow contents overwrite foundation & app css
+     wp_register_style( 'style',get_template_directory_uri() . '/style.css', false );
+     wp_enqueue_style( 'style' );
+     
+     wp_register_style( 'google_font',"http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,300", false );
+     wp_enqueue_style( 'google_font' );
+     
+  }
 }  
+add_action( 'init', 'reverie_css' );
 
-/* load modernizr from foundation */
-function modernize_it(){
-    wp_register_script( 'modernizr', get_template_directory_uri() . '/javascripts/foundation/modernizr.foundation.js' ); 
-    wp_enqueue_script( 'modernizr' );
+function reverie_ie_css () {
+    echo '<!--[if lt IE 9]>';
+    echo '<link rel="stylesheet" href="'. get_template_directory_uri().'/css/ie.css">';
+    echo '<![endif]-->';
+}
+add_action( 'wp_head', 'reverie_ie_css' );
+
+// Enqueue js files
+function reverie_scripts() {
+
+global $is_IE;
+
+  if ( !is_admin() ) {
+  
+  // Enqueue to header
+     wp_deregister_script( 'jquery' );
+     wp_register_script( 'jquery', get_template_directory_uri() . '/js/jquery.js' );
+     wp_enqueue_script( 'jquery' );
+     
+     wp_register_script( 'modernizr', get_template_directory_uri() . '/js/modernizr.foundation.js', array( 'jquery' ) );
+     wp_enqueue_script( 'modernizr' );
+ 
+  // Enqueue to footer
+     wp_register_script( 'foundation', get_template_directory_uri() . '/js/foundation.min.js', array( 'jquery' ), false, true );
+     wp_enqueue_script( 'foundation' );
+     
+     wp_register_script( 'offcanvas', get_template_directory_uri() . '/js/jquery.offcanvas.js', array( 'jquery' ), false, true );
+     wp_enqueue_script( 'offcanvas' );
+     
+     wp_register_script( 'app', get_template_directory_uri() . '/js/app.js', array( 'jquery' ), false, true );
+     wp_enqueue_script( 'app' );
+     
+    
+     if ($is_IE) {
+        wp_register_script ( 'html5shiv', "http://html5shiv.googlecode.com/svn/trunk/html5.js" , false, true);
+        wp_enqueue_script ( 'html5shiv' );
+     } 
+     
+     // Enable threaded comments 
+     if ( (!is_admin()) && is_singular() && comments_open() && get_option('thread_comments') )
+		wp_enqueue_script('comment-reply');
+  }
+}
+add_action( 'init', 'reverie_scripts' );
+
+// create widget areas: sidebar, footer
+$sidebars = array('Sidebar');
+foreach ($sidebars as $sidebar) {
+	register_sidebar(array('name'=> $sidebar,
+		'before_widget' => '<article id="%1$s" class="row widget %2$s"><div class="sidebar-section twelve columns">',
+		'after_widget' => '</div></article>',
+		'before_title' => '<h6><strong>',
+		'after_title' => '</strong></h6>'
+	));
+}
+$sidebars = array('Footer');
+foreach ($sidebars as $sidebar) {
+	register_sidebar(array('name'=> $sidebar,
+		'before_widget' => '<article id="%1$s" class="four columns widget %2$s"><div class="footer-section">',
+		'after_widget' => '</div></article>',
+		'before_title' => '<h6><strong>',
+		'after_title' => '</strong></h6>'
+	));
 }
 
-add_action( 'wp_enqueue_scripts', 'modernize_it' );
-
-function foundation_js(){
-    wp_register_script( 'foundation-reveal', get_template_directory_uri() . '/javascripts/foundation/jquery.reveal.js' ); 
-    wp_enqueue_script( 'foundation-reveal', 'jQuery', '1.1', true );
-    wp_register_script( 'foundation-orbit', get_template_directory_uri() . '/javascripts/foundation/jquery.orbit-1.4.0.js' ); 
-    wp_enqueue_script( 'foundation-orbit', 'jQuery', '1.4.0', true );
-    wp_register_script( 'foundation-custom-forms', get_template_directory_uri() . '/javascripts/foundation/jquery.customforms.js' ); 
-    wp_enqueue_script( 'foundation-custom-forms', 'jQuery', '1.0', true );
-    wp_register_script( 'foundation-placeholder', get_template_directory_uri() . '/javascripts/foundation/jquery.placeholder.min.js' ); 
-    wp_enqueue_script( 'foundation-placeholder', 'jQuery', '2.0.7', true );
-    wp_register_script( 'foundation-tooltips', get_template_directory_uri() . '/javascripts/foundation/jquery.tooltips.js' ); 
-    wp_enqueue_script( 'foundation-tooltips', 'jQuery', '2.0.1', true );
-    wp_register_script( 'foundation-app', get_template_directory_uri() . '/javascripts/app.js' ); 
-    wp_enqueue_script( 'foundation-app', 'jQuery', '1.0', true );
-    wp_register_script( 'foundation-off-canvas', get_template_directory_uri() . '/javascripts/foundation/off-canvas.js' ); 
-    wp_enqueue_script( 'foundation-off-canvas', 'jQuery', '1.0', true );
+// return entry meta information for posts, used by multiple loops.
+function reverie_entry_meta() {
+	echo '<time class="updated" datetime="'. get_the_time('c') .'" pubdate>'. sprintf(__('Posted on %s at %s.', 'reverie'), get_the_time('l, F jS, Y'), get_the_time()) .'</time>';
+	echo '<p class="byline author vcard">'. __('Written by', 'reverie') .' <a href="'. get_author_posts_url(get_the_author_meta('ID')) .'" rel="author" class="fn">'. get_the_author() .'</a></p>';
 }
 
-add_action('wp_enqueue_scripts', 'foundation_js');
+/* Customized the output of caption, you can remove the filter to restore back to the WP default output. Courtesy of DevPress. http://devpress.com/blog/captions-in-wordpress/ */
+add_filter( 'img_caption_shortcode', 'cleaner_caption', 10, 3 );
 
-function wp_foundation_js(){
-    wp_register_script( 'wp-foundation-js', get_template_directory_uri() . '/library/js/scripts.js', 'jQuery', '1.0', true);
-    wp_enqueue_script( 'wp-foundation-js' );
+function cleaner_caption( $output, $attr, $content ) {
+
+	/* We're not worried abut captions in feeds, so just return the output here. */
+	if ( is_feed() )
+		return $output;
+
+	/* Set up the default arguments. */
+	$defaults = array(
+		'id' => '',
+		'align' => 'alignnone',
+		'width' => '',
+		'caption' => ''
+	);
+
+	/* Merge the defaults with user input. */
+	$attr = shortcode_atts( $defaults, $attr );
+
+	/* If the width is less than 1 or there is no caption, return the content wrapped between the [caption]< tags. */
+	if ( 1 > $attr['width'] || empty( $attr['caption'] ) )
+		return $content;
+
+	/* Set up the attributes for the caption <div>. */
+	$attributes = ' class="figure ' . esc_attr( $attr['align'] ) . '"';
+
+	/* Open the caption <div>. */
+	$output = '<figure' . $attributes .'>';
+
+	/* Allow shortcodes for the content the caption was created for. */
+	$output .= do_shortcode( $content );
+
+	/* Append the caption text. */
+	$output .= '<figcaption>' . $attr['caption'] . '</figcaption>';
+
+	/* Close the caption </div>. */
+	$output .= '</figure>';
+
+	/* Return the formatted, clean caption. */
+	return $output;
 }
 
-add_action('wp_enqueue_scripts', 'wp_foundation_js');
+// Clean the output of attributes of images in editor. Courtesy of SitePoint. http://www.sitepoint.com/wordpress-change-img-tag-html/
+function image_tag_class($class, $id, $align, $size) {
+	$align = 'align' . esc_attr($align);
+	return $align;
+}
+add_filter('get_image_tag_class', 'image_tag_class', 0, 4);
+function image_tag($html, $id, $alt, $title) {
+	return preg_replace(array(
+			'/\s+width="\d+"/i',
+			'/\s+height="\d+"/i',
+			'/alt=""/i'
+		),
+		array(
+			'',
+			'',
+			'',
+			'alt="' . $title . '"'
+		),
+		$html);
+}
+add_filter('get_image_tag', 'image_tag', 0, 4);
 
-/************* COMMENT LAYOUT *********************/
-		
-// Comment Layout
-function bones_comments($comment, $args, $depth) {
-   $GLOBALS['comment'] = $comment; ?>
-	<li <?php comment_class(); ?>>
-		<article id="comment-<?php comment_ID(); ?>" class="panel clearfix">
-			<div class="comment-author vcard row clearfix">
-                <div class="twelve columns">
-                    <div class="
-                        <?php
-                        $authID = get_the_author_meta('ID');
-                                                    
-                        if($authID == $comment->user_id)
-                            echo "panel callout";
-                        else
-                            echo "panel";
-                        ?>
-                    ">
-                        <div class="row">
-            				<div class="avatar two columns">
-            					<?php echo get_avatar($comment,$size='75',$default='<path_to_url>' ); ?>
-            				</div>
-            				<div class="ten columns">
-            					<?php printf(__('<h4 class="span8">%s</h4>'), get_comment_author_link()) ?>
-            					<time datetime="<?php echo comment_time('Y-m-j'); ?>"><a href="<?php echo htmlspecialchars( get_comment_link( $comment->comment_ID ) ) ?>"><?php comment_time('F jS, Y'); ?> </a></time>
-            					
-            					<?php edit_comment_link(__('Edit'),'<span class="edit-comment">', '</span>'); ?>
-                                
-                                <?php if ($comment->comment_approved == '0') : ?>
-                   					<div class="alert-box success">
-                      					<?php _e('Your comment is awaiting moderation.') ?>
-                      				</div>
-            					<?php endif; ?>
-                                
-                                <?php comment_text() ?>
-                                
-                                <!-- removing reply link on each comment since we're not nesting them -->
-            					<?php comment_reply_link(array_merge( $args, array('depth' => $depth, 'max_depth' => $args['max_depth']))) ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-			</div>
-		</article>
-    <!-- </li> is added by wordpress automatically -->
-<?php
-} // don't remove this bracket!
+// Customize output for menu
+class reverie_walker extends Walker_Nav_Menu {
+  function start_lvl(&$output, $depth) {
+    $indent = str_repeat("\t", $depth);
+    $output .= "\n$indent<a href=\"#\" class=\"flyout-toggle\"><span> </span></a><ul class=\"flyout\">\n";
+  }
+}
 
-// Add grid classes to comments
-function add_class_comments($classes){
-    array_push($classes, "twelve", "columns");
+// Add Foundation 'active' class for the current menu item 
+function reverie_active_nav_class( $classes, $item )
+{
+    if($item->current == 1)
+    {
+        $classes[] = 'active';
+    }
     return $classes;
 }
-add_filter('comment_class', 'add_class_comments');
+add_filter( 'nav_menu_css_class', 'reverie_active_nav_class', 10, 2 );
 
-/************* SEARCH FORM LAYOUT *****************/
-
-// Search Form
-function bones_wpsearch($form) {
-    $form = '<form role="search" method="get" id="searchform" action="' . home_url( '/' ) . '" >
-    <label class="screen-reader-text" for="s">' . __('Search for:', 'bonestheme') . '</label>
-    <input type="text" value="' . get_search_query() . '" name="s" id="s" placeholder="Search the Site..." />
-    <input type="submit" id="searchsubmit" value="'. esc_attr__('Search') .'" />
-    </form>';
-    return $form;
-} // don't remove this bracket!
-
-/****************** password protected post form *****/
-
-add_filter( 'the_password_form', 'custom_password_form' );
-
-function custom_password_form() {
-	global $post;
-	$label = 'pwbox-'.( empty( $post->ID ) ? rand() : $post->ID );
-	$o = '<div class="clearfix"><form action="' . get_option('siteurl') . '/wp-pass.php" method="post">
-	' . __( "<p>This post is password protected. To view it please enter your password below:</p>" ) . '
-	<div class="row collapse">
-        <div class="twelve columns"><label for="' . $label . '">' . __( "Password:" ) . ' </label></div>
-        <div class="eight columns">
-            <input name="post_password" id="' . $label . '" type="password" size="20" class="input-text" />
-        </div>
-        <div class="four columns">
-            <input type="submit" name="Submit" class="postfix button nice blue radius" value="' . esc_attr__( "Submit" ) . '" />
-        </div>
-	</div>
-    </form></div>
-	';
-	return $o;
+// img unautop, Courtesy of Interconnectit http://interconnectit.com/2175/how-to-remove-p-tags-from-images-in-wordpress/
+function img_unautop($pee) {
+    $pee = preg_replace('/<p>\\s*?(<a .*?><img.*?><\\/a>|<img.*?>)?\\s*<\\/p>/s', '<figure>$1</figure>', $pee);
+    return $pee;
 }
+add_filter( 'the_content', 'img_unautop', 30 );
 
-/*********** update standard wp tag cloud widget so it looks better ************/
-
-// filter tag clould output so that it can be styled by CSS
-function add_tag_class( $taglinks ) {
-    $tags = explode('</a>', $taglinks);
-    $regex = "#(.*tag-link[-])(.*)(' title.*)#e";
-        foreach( $tags as $tag ) {
-            $tagn[] = preg_replace($regex, "('$1$2 label radius tag-'.get_tag($2)->slug.'$3')", $tag );
-        }
-    $taglinks = implode('</a>', $tagn);
-    return $taglinks;
-}
-
-add_action('wp_tag_cloud', 'add_tag_class');
-
-add_filter( 'widget_tag_cloud_args', 'my_widget_tag_cloud_args' );
-
-function my_widget_tag_cloud_args( $args ) {
-	$args['number'] = 20; // show less tags
-	$args['largest'] = 9.75; // make largest and smallest the same - i don't like the varying font-size look
-	$args['smallest'] = 9.75;
-	$args['unit'] = 'px';
-	return $args;
-}
-
-add_filter('wp_tag_cloud','wp_tag_cloud_filter', 10, 2);
-
-function wp_tag_cloud_filter($return, $args)
-{
-  return '<div id="tag-cloud"><p>'.$return.'</p></div>';
-}
-
-function add_class_the_tags($html){
-    $postid = get_the_ID();
-    $html = str_replace('<a','<a class="label success radius"',$html);
-    return $html;
-}
-add_filter('the_tags','add_class_the_tags',10,1);
-
-// Enable shortcodes in widgets
-add_filter('widget_text', 'do_shortcode');
-
-// Disable jump in 'read more' link
-function remove_more_jump_link($link) {
-	$offset = strpos($link, '#more-');
-	if ($offset) {
-		$end = strpos($link, '"',$offset);
-	}
-	if ($end) {
-		$link = substr_replace($link, '', $offset, $end-$offset);
-	}
-	return $link;
-}
-add_filter('the_content_more_link', 'remove_more_jump_link');
-
-// Remove height/width attributes on images so they can be responsive
-add_filter( 'post_thumbnail_html', 'remove_thumbnail_dimensions', 10 );
-add_filter( 'image_send_to_editor', 'remove_thumbnail_dimensions', 10 );
-
-function remove_thumbnail_dimensions( $html ) {
-    $html = preg_replace( '/(width|height)=\"\d*\"\s/', "", $html );
-    return $html;
-}
-
-// change the standard class that wordpress puts on the active menu item in the nav bar
-//Deletes all CSS classes and id's, except for those listed in the array below
-function custom_wp_nav_menu($var) {
-        return is_array($var) ? array_intersect($var, array(
-                //List of allowed menu classes
-                'current_page_item',
-                'current_page_parent',
-                'current_page_ancestor',
-                'first',
-                'last',
-                'vertical',
-                'horizontal'
-                )
-        ) : '';
-}
-add_filter('nav_menu_css_class', 'custom_wp_nav_menu');
-add_filter('nav_menu_item_id', 'custom_wp_nav_menu');
-add_filter('page_css_class', 'custom_wp_nav_menu');
+// Pagination
+function reverie_pagination() {
+	global $wp_query;
  
-//Replaces "current-menu-item" with "active"
-function current_to_active($text){
-        $replace = array(
-                //List of menu item classes that should be changed to "active"
-                'current_page_item' => 'active',
-                'current_page_parent' => 'active',
-                'current_page_ancestor' => 'active',
-        );
-        $text = str_replace(array_keys($replace), $replace, $text);
-                return $text;
-        }
-add_filter ('wp_nav_menu','current_to_active');
+	$big = 999999999; // This needs to be an unlikely integer
  
-//Deletes empty classes and removes the sub menu class
-function strip_empty_classes($menu) {
-    $menu = preg_replace('/ class=""| class="sub-menu"/','',$menu);
-    return $menu;
-}
-add_filter ('wp_nav_menu','strip_empty_classes');
-
-
-// add the 'has-flyout' class to any li's that have children and add the arrows to li's with children
-
-class description_walker extends Walker_Nav_Menu
-{
-      function start_el(&$output, $item, $depth, $args)
-      {
-            global $wp_query;
-            $indent = ( $depth ) ? str_repeat( "\t", $depth ) : '';
-            
-            $class_names = $value = '';
-            
-            // If the item has children, add the dropdown class for foundation
-            if ( $args->has_children ) {
-                $class_names = "has-flyout ";
-            }
-            
-            $classes = empty( $item->classes ) ? array() : (array) $item->classes;
-            
-            $class_names .= join( ' ', apply_filters( 'nav_menu_css_class', array_filter( $classes ), $item ) );
-            $class_names = ' class="'. esc_attr( $class_names ) . '"';
-           
-            $output .= $indent . '<li id="menu-item-'. $item->ID . '"' . $value . $class_names .'>';
-
-            $attributes  = ! empty( $item->attr_title ) ? ' title="'  . esc_attr( $item->attr_title ) .'"' : '';
-            $attributes .= ! empty( $item->target )     ? ' target="' . esc_attr( $item->target     ) .'"' : '';
-            $attributes .= ! empty( $item->xfn )        ? ' rel="'    . esc_attr( $item->xfn        ) .'"' : '';
-            $attributes .= ! empty( $item->url )        ? ' href="'   . esc_attr( $item->url        ) .'"' : '';
-            // if the item has children add these two attributes to the anchor tag
-            // if ( $args->has_children ) {
-            //     $attributes .= 'class="dropdown-toggle" data-toggle="dropdown"';
-            // }
-
-            $item_output = $args->before;
-            $item_output .= '<a'. $attributes .'>';
-            $item_output .= $args->link_before .apply_filters( 'the_title', $item->title, $item->ID );
-            $item_output .= $args->link_after;
-            // if the item has children add the caret just before closing the anchor tag
-            if ( $args->has_children ) {
-                $item_output .= '</a><a href="#" class="flyout-toggle"><span> </span></a>';
-            }
-            else{
-                $item_output .= '</a>';
-            }
-            $item_output .= $args->after;
-
-            $output .= apply_filters( 'walker_nav_menu_start_el', $item_output, $item, $depth, $args );
-            }
-            
-        function start_lvl(&$output, $depth) {
-            $indent = str_repeat("\t", $depth);
-            $output .= "\n$indent<ul class=\"flyout\">\n";
-        }
-            
-        function display_element( $element, &$children_elements, $max_depth, $depth=0, $args, &$output )
-            {
-                $id_field = $this->db_fields['id'];
-                if ( is_object( $args[0] ) ) {
-                    $args[0]->has_children = ! empty( $children_elements[$element->$id_field] );
-                }
-                return parent::display_element( $element, $children_elements, $max_depth, $depth, $args, $output );
-            }       
+	// For more options and info view the docs for paginate_links()
+	// http://codex.wordpress.org/Function_Reference/paginate_links
+	$paginate_links = paginate_links( array(
+		'base' => str_replace( $big, '%#%', get_pagenum_link($big) ),
+		'current' => max( 1, get_query_var('paged') ),
+		'total' => $wp_query->max_num_pages,
+		'mid_size' => 5,
+		'prev_next' => True,
+	    'prev_text' => __('&laquo;'),
+	    'next_text' => __('&raquo;'),
+		'type' => 'list'
+	) );
+ 
+	// Display the pagination if more than one page is found
+	if ( $paginate_links ) {
+		echo '<div class="reverie-pagination">';
+		echo $paginate_links;
+		echo '</div><!--// end .pagination -->';
+	}
 }
 
-// Walker class to customize footer links
-class footer_links_walker extends Walker_Nav_Menu
-{
-      function start_el(&$output, $item, $depth, $args)
-      {
-            global $wp_query;
-            $indent = ( $depth ) ? str_repeat( "\t", $depth ) : '';
-            
-            $class_names = $value = '';
-            
-            $classes = empty( $item->classes ) ? array() : (array) $item->classes;
-            
-            $class_names .= join( ' ', apply_filters( 'nav_menu_css_class', array_filter( $classes ), $item ) );
-            $class_names = ' class="'. esc_attr( $class_names ) . '"';
-           
-            $output .= $indent . '<li ' . $value . $class_names .'>';
+// Presstrends
+function presstrends() {
 
-            $attributes  = ! empty( $item->attr_title ) ? ' title="'  . esc_attr( $item->attr_title ) .'"' : '';
-            $attributes .= ! empty( $item->target )     ? ' target="' . esc_attr( $item->target     ) .'"' : '';
-            $attributes .= ! empty( $item->xfn )        ? ' rel="'    . esc_attr( $item->xfn        ) .'"' : '';
-            $attributes .= ! empty( $item->url )        ? ' href="'   . esc_attr( $item->url        ) .'"' : '';
+// Add your PressTrends and Theme API Keys
+$api_key = 'xc11x4vpf17icuwver0bhgbzz4uewlu5ql38';
+$auth = 'kw1f8yr8eo1op9c859qcqkm2jjseuj7zp';
 
-            $item_output = $args->before;
-            $item_output .= '<a'. $attributes .'>';
-            $item_output .= $args->link_before .apply_filters( 'the_title', $item->title, $item->ID );
-            $item_output .= $args->link_after;
-            
-            $item_output .= '</a>';
-            $item_output .= $args->after;
-
-            $output .= apply_filters( 'walker_nav_menu_start_el', $item_output, $item, $depth, $args );
-            }
-            
-        function start_lvl(&$output, $depth) {
-            $indent = str_repeat("\t", $depth);
-            $output .= "\n$indent<ul class=\"flyout\">\n";
-        }
-            
-        function display_element( $element, &$children_elements, $max_depth, $depth=0, $args, &$output )
-            {
-                $id_field = $this->db_fields['id'];
-                if ( is_object( $args[0] ) ) {
-                    $args[0]->has_children = ! empty( $children_elements[$element->$id_field] );
-                }
-                return parent::display_element( $element, $children_elements, $max_depth, $depth, $args, $output );
-            }       
+// NO NEED TO EDIT BELOW
+$data = get_transient( 'presstrends_data' );
+if (!$data || $data == ''){
+$api_base = 'http://api.presstrends.io/index.php/api/sites/add/auth/';
+$url = $api_base . $auth . '/api/' . $api_key . '/';
+$data = array();
+$count_posts = wp_count_posts();
+$count_pages = wp_count_posts('page');
+$comments_count = wp_count_comments();
+$theme_data = get_theme_data(get_stylesheet_directory() . '/style.css');
+$plugin_count = count(get_option('active_plugins'));
+$all_plugins = get_plugins();
+foreach($all_plugins as $plugin_file => $plugin_data) {
+$plugin_name .= $plugin_data['Name'];
+$plugin_name .= '&';
 }
-
-
-// Add the Meta Box to the homepage template
-function add_homepage_meta_box() {  
-    add_meta_box(  
-        'homepage_meta_box', // $id  
-        'Custom Fields', // $title  
-        'show_homepage_meta_box', // $callback  
-        'page', // $page  
-        'normal', // $context  
-        'high'); // $priority  
-}  
-add_action('add_meta_boxes', 'add_homepage_meta_box');
-
-// Field Array  
-$prefix = 'custom_';  
-$custom_meta_fields = array(  
-    array(  
-        'label'=> 'Homepage tagline area',  
-        'desc'  => 'Displayed underneath page title. Only used on homepage template. HTML can be used.',  
-        'id'    => $prefix.'tagline',  
-        'type'  => 'textarea' 
-    )  
-);  
-
-// The Homepage Meta Box Callback  
-function show_homepage_meta_box() {  
-global $custom_meta_fields, $post;  
-// Use nonce for verification  
-echo '<input type="hidden" name="custom_meta_box_nonce" value="'.wp_create_nonce(basename(__FILE__)).'" />';  
-  
-    // Begin the field table and loop  
-    echo '<table class="form-table">';  
-    foreach ($custom_meta_fields as $field) {  
-        // get value of this field if it exists for this post  
-        $meta = get_post_meta($post->ID, $field['id'], true);  
-        // begin a table row with  
-        echo '<tr> 
-                <th><label for="'.$field['id'].'">'.$field['label'].'</label></th> 
-                <td>';  
-                switch($field['type']) {  
-                    // text  
-                    case 'text':  
-                        echo '<input type="text" name="'.$field['id'].'" id="'.$field['id'].'" value="'.$meta.'" size="60" /> 
-                            <br /><span class="description">'.$field['desc'].'</span>';  
-                    break;
-                    
-                    // textarea  
-                    case 'textarea':  
-                        echo '<textarea name="'.$field['id'].'" id="'.$field['id'].'" cols="80" rows="4">'.$meta.'</textarea> 
-                            <br /><span class="description">'.$field['desc'].'</span>';  
-                    break;  
-                } //end switch  
-        echo '</td></tr>';  
-    } // end foreach  
-    echo '</table>'; // end table  
-}  
-
-// Save the Data  
-function save_homepage_meta($post_id) {  
-    global $custom_meta_fields;  
-  
-    // verify nonce  
-    if (!wp_verify_nonce($_POST['custom_meta_box_nonce'], basename(__FILE__)))  
-        return $post_id;  
-    // check autosave  
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)  
-        return $post_id;  
-    // check permissions  
-    if ('page' == $_POST['post_type']) {  
-        if (!current_user_can('edit_page', $post_id))  
-            return $post_id;  
-        } elseif (!current_user_can('edit_post', $post_id)) {  
-            return $post_id;  
-    }  
-  
-    // loop through fields and save the data  
-    foreach ($custom_meta_fields as $field) {  
-        $old = get_post_meta($post_id, $field['id'], true);  
-        $new = $_POST[$field['id']];  
-        if ($new && $new != $old) {  
-            update_post_meta($post_id, $field['id'], $new);  
-        } elseif ('' == $new && $old) {  
-            delete_post_meta($post_id, $field['id'], $old);  
-        }  
-    } // end foreach  
-}  
-add_action('save_post', 'save_homepage_meta');  
-
+$data['url'] = stripslashes(str_replace(array('http://', '/', ':' ), '', site_url()));
+$data['posts'] = $count_posts->publish;
+$data['pages'] = $count_pages->publish;
+$data['comments'] = $comments_count->total_comments;
+$data['approved'] = $comments_count->approved;
+$data['spam'] = $comments_count->spam;
+$data['theme_version'] = $theme_data['Version'];
+$data['theme_name'] = $theme_data['Name'];
+$data['site_name'] = str_replace( ' ', '', get_bloginfo( 'name' ));
+$data['plugins'] = $plugin_count;
+$data['plugin'] = urlencode($plugin_name);
+$data['wpversion'] = get_bloginfo('version');
+foreach ( $data as $k => $v ) {
+$url .= $k . '/' . $v . '/';
+}
+$response = wp_remote_get( $url );
+set_transient('presstrends_data', $data, 60*60*24);
+}}
+add_action('admin_init', 'presstrends');
 ?>
