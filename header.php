@@ -45,10 +45,9 @@
 		<!-- Row for blog navigation -->
 		<div class="row top-header">
 			<header class="twelve columns" role="banner">
-				<div class="reverie-header">
-					<h1><a href="<?php bloginfo('url'); ?>" title="<?php bloginfo('name'); ?>"><?php bloginfo('name'); ?></a></h1>
-					<h4 class="subheader"><?php bloginfo('description'); ?></h4>
-				</div>
+				
+				<h1 id="logo" class="columns"><a href="<?php echo site_url(); ?>"><img src="<?php echo get_template_directory_uri(); ?>/images/ullerupsogn_logo.png" alt="<?php echo get_bloginfo('name'); ?>" title="<?php echo get_bloginfo('name'); ?>" /></a></h1>
+				
 				<nav role="navigation" class="hide-for-small top-nav">
 					<?php
 						if ( has_nav_menu( 'primary_navigation' ) ):

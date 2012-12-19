@@ -125,3 +125,6 @@ License URI:        ja
 /*  --------------------------
     Your Customized Style
     ----------------------- */
+
+    .clear { clear: both;}
+    #logo { margin: 30px 0 0px; padding: 0;}
