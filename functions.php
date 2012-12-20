@@ -278,14 +278,14 @@ add_action('admin_init', 'presstrends');
 
 // support for custom header
 $defaults = array(
-	'default-image'          => '/images/headers/default.jpg',
+	'default-image'          => '%s/images/headers/default.jpg',
 	'random-default'         => true,
 	'width'                  => 960,
 	'height'                 => 300,
-	'flex-height'            => false,
+	'flex-height'            => true,
 	'flex-width'             => false,
 	'default-text-color'     => '',
-	'header-text'            => true,
+	'header-text'            => false,
 	'uploads'                => true,
 	'wp-head-callback'       => '',
 	'admin-head-callback'    => '',

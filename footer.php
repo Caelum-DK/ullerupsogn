@@ -24,18 +24,11 @@
 		
 		</div><!-- End Off-Canvas Row -->
 		
-		<footer id="content-info" role="contentinfo">
+		<footer id="contact_info" role="contentinfo">
 			<div class="row">
 				<?php dynamic_sidebar("Footer"); ?>
 			</div>
-			<div class="row">
-				<div class="four columns">
-					&copy; 2008-<?php echo date('Y'); ?> All rights reserved.
-					<br>
-					Powered by <a href="http://themefortress.com/reverie/" rel="nofollow" title="Reverie Framework">Reverie Framework</a>.
-				</div>
-				<?php wp_nav_menu(array('theme_location' => 'utility_navigation', 'container' => false, 'menu_class' => 'eight columns footer-nav')); ?>
-			</div>
+			
 		</footer>
 			
 	</div><!-- Container End -->
