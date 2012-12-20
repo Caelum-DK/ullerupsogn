@@ -275,4 +275,21 @@ $response = wp_remote_get( $url );
 set_transient('presstrends_data', $data, 60*60*24);
 }}
 add_action('admin_init', 'presstrends');
+
+// support for custom header
+$defaults = array(
+	'default-image'          => '/images/headers/default.jpg',
+	'random-default'         => true,
+	'width'                  => 960,
+	'height'                 => 300,
+	'flex-height'            => false,
+	'flex-width'             => false,
+	'default-text-color'     => '',
+	'header-text'            => true,
+	'uploads'                => true,
+	'wp-head-callback'       => '',
+	'admin-head-callback'    => '',
+	'admin-preview-callback' => '',
+);
+add_theme_support( 'custom-header', $defaults );
 ?>

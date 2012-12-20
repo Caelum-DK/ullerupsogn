@@ -484,10 +484,10 @@ div.button-bar ul.button-group:last-child { margin-left: 0; }
 .nav-bar > li { float: left; display: block; position: relative; padding: 0; margin: 0; line-height: 35px;}
 .nav-bar > li:first-child {  }
 .nav-bar > li:last-child {  }
-.nav-bar > li.active { background: ; border-bottom: 5px solid #d47e4c; }
+.nav-bar > li.active { background: ; border-bottom: 5px solid #e6cbba; }
 .nav-bar > li.active > a { color: black; cursor: default; }
 .nav-bar > li.active:hover { background: ; cursor: default; }
-.nav-bar > li:hover { background: ; }
+.nav-bar > li:hover { background: ; border-bottom: 5px solid #d47e4c; }
 .nav-bar > li > a { color: black; }
 .nav-bar > li ul { margin-bottom: 0; }
 .nav-bar > li .flyout { display: none; }
