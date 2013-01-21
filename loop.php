@@ -9,15 +9,21 @@
 <?php /* Start loop */ ?>
 <?php while (have_posts()) : the_post(); ?>
 	<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+		 <?php if ( has_post_thumbnail()) : ?>
+			   <a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>" >
+			   <?php the_post_thumbnail('thumbnail', array('class' => 'front_thumbnail')); ?>
+			   </a>
+		 <?php endif; ?>
 		<header>
-			<h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
-			<?php reverie_entry_meta(); ?>
+			<h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+			<div class="post_meta_info"><?php reverie_entry_meta(); ?></div>
 		</header>
-		<div class="entry-content">
+		<div class="entry-content">			
 	<?php if (is_archive() || is_search()) : // Only display excerpts for archives and search ?>
 		<?php the_excerpt(); ?>
 	<?php else : ?>
-		<?php the_content('Continue reading...'); ?>
+		<?php the_excerpt(); ?>
+		<p><a href="<?php the_permalink(); ?>">Læs hele indlæget »</a></p>
 	<?php endif; ?>
 		</div>
 		<footer>

@@ -5,9 +5,9 @@ function reverie_setup() {
 	
 	// Add post thumbnail supports. http://codex.wordpress.org/Post_Thumbnails
 	add_theme_support('post-thumbnails');
-	// set_post_thumbnail_size(150, 150, false);
+	set_post_thumbnail_size(150, 150, true); // 150 pixels wide by 150 pixels tall, crop mode
 	
-	// Add post formarts supports. http://codex.wordpress.org/Post_Formats
+	// Add post formats supports. http://codex.wordpress.org/Post_Formats
 	add_theme_support('post-formats', array('aside', 'gallery', 'link', 'image', 'quote', 'status', 'video', 'audio', 'chat'));
 	
 	// Add menu supports. http://codex.wordpress.org/Function_Reference/register_nav_menus
@@ -18,6 +18,41 @@ function reverie_setup() {
 	));	
 }
 add_action('after_setup_theme', 'reverie_setup');
+
+// Breadcrumbs function
+function get_breadcrumbs(){
+	global $post;
+
+	$separator = '  &gt; '; // what to place between the pages
+
+	if ( is_page() ){
+		// bread crumb structure only logical on pages
+		$trail = array($post); // initially $trail only contains the current page
+		$parent = $post; // initially set to current post
+		$show_on_front = get_option( 'show_on_front'); // does the front page display the latest posts or a static page
+		$page_on_front = get_option( 'page_on_front' ); // if it shows a page, what page
+		// while the current page isn't the home page and it has a parent
+		while ( $parent->post_parent && !($parent->ID == $page_on_front && 'page') == $show_on_front ){
+			$parent = get_post( $parent->post_parent ); // get the current page's parent
+			array_unshift( $trail, $parent ); // add the parent object to beginning of array
+		}
+		if ( 'posts' == $show_on_front ) // if the front page shows latest posts, simply display a home link
+			echo "<li class='breadcrumb-item' id='breadcrumb-0'><a href='" . get_bloginfo('home') . "'>Home</a></li>\n"; // home page link
+		else{ // if the front page displays a static page, display a link to it
+			$home_page = get_post( $page_on_front ); // get the front page object
+			echo "<li class='breadcrumb-item' id='breadcrumb-{$home_page->ID}'><a href='" . get_bloginfo('home') . "'>$home_page->post_title</a></li>\n"; // home page link
+			if($trail[0]->ID == $page_on_front) // if the home page is an ancestor of this page
+				array_shift( $trail ); // remove the home page from the $trail because we've already printed it
+		}
+		foreach ( $trail as $page){
+			// print the link to the current page in the foreach
+			echo "<li class='breadcrumb-item' id='breadcrumb-{$page->ID}' >$separator<a href='" . get_page_link( $page->ID ) . "'>{$page->post_title}</a></li>\n";
+		}
+	}else{
+		// if what we're looking at isn't a page, simply display a home link
+		echo "<li class='breadcrumb-item' id='breadcrumb-0'><a href='" . get_bloginfo('home') . "'>Home</a></li>\n"; // home page link
+	}
+}
 
 // Enqueue for header and footer, thanks to flickapix on Github.
 // Enqueue css files
@@ -89,14 +124,26 @@ global $is_IE;
 }
 add_action( 'init', 'reverie_scripts' );
 
+// Control exerpt length etc.
+function custom_excerpt_length( $length ) {
+	return 36;
+}
+add_filter( 'excerpt_length', 'custom_excerpt_length', 999 );
+
+function new_excerpt_more($more) {
+       global $post;
+	return ' <a href="'. get_permalink($post->ID) . '">...</a>';
+}
+add_filter('excerpt_more', 'new_excerpt_more');
+
 // create widget areas: sidebar, footer
 $sidebars = array('Sidebar');
 foreach ($sidebars as $sidebar) {
 	register_sidebar(array('name'=> $sidebar,
-		'before_widget' => '<article id="%1$s" class="row widget %2$s"><div class="sidebar-section twelve columns">',
+		'before_widget' => '<article id="%1$s" class="row widget %2$s"><div class="sidebar-section">',
 		'after_widget' => '</div></article>',
-		'before_title' => '<h6><strong>',
-		'after_title' => '</strong></h6>'
+		'before_title' => '<h4>',
+		'after_title' => '</h4>'
 	));
 }
 $sidebars = array('Footer');
@@ -111,8 +158,8 @@ foreach ($sidebars as $sidebar) {
 
 // return entry meta information for posts, used by multiple loops.
 function reverie_entry_meta() {
-	echo '<time class="updated" datetime="'. get_the_time('c') .'" pubdate>'. sprintf(__('Posted on %s at %s.', 'reverie'), get_the_time('l, F jS, Y'), get_the_time()) .'</time>';
-	echo '<p class="byline author vcard">'. __('Written by', 'reverie') .' <a href="'. get_author_posts_url(get_the_author_meta('ID')) .'" rel="author" class="fn">'. get_the_author() .'</a></p>';
+	echo '<time class="updated" datetime="'. get_the_time('c') .'" pubdate>'. sprintf(__('Skrevet %s', 'reverie'), get_the_time('l, j F, Y'), get_the_time()) . '</time>';
+	echo ''. __(' af', 'reverie') .' <a href="'. get_author_posts_url(get_the_author_meta('ID')) .'" rel="author" class="fn">'. get_the_author() .'</a>';
 }
 
 /* Customized the output of caption, you can remove the filter to restore back to the WP default output. Courtesy of DevPress. http://devpress.com/blog/captions-in-wordpress/ */
@@ -293,3 +340,4 @@ $defaults = array(
 );
 add_theme_support( 'custom-header', $defaults );
 ?>
+

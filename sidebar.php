@@ -1,4 +1,4 @@
-<aside id="sidebar" class="four columns">
+<aside id="sidebar" class="three columns">
 	<div class="sidebar-box">
 		<?php dynamic_sidebar("Sidebar"); ?>
 	</div>
