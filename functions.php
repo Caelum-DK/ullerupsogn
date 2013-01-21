@@ -23,7 +23,7 @@ add_action('after_setup_theme', 'reverie_setup');
 function get_breadcrumbs(){
 	global $post;
 
-	$separator = '  &gt; '; // what to place between the pages
+	$separator = ' » '; // what to place between the pages
 
 	if ( is_page() ){
 		// bread crumb structure only logical on pages
@@ -37,7 +37,7 @@ function get_breadcrumbs(){
 			array_unshift( $trail, $parent ); // add the parent object to beginning of array
 		}
 		if ( 'posts' == $show_on_front ) // if the front page shows latest posts, simply display a home link
-			echo "<li class='breadcrumb-item' id='breadcrumb-0'><a href='" . get_bloginfo('home') . "'>Home</a></li>\n"; // home page link
+			echo "<li class='breadcrumb-item' id='breadcrumb-0'><a href='" . get_bloginfo('home') . "'>Ullerup Sogn</a></li>\n"; // home page link
 		else{ // if the front page displays a static page, display a link to it
 			$home_page = get_post( $page_on_front ); // get the front page object
 			echo "<li class='breadcrumb-item' id='breadcrumb-{$home_page->ID}'><a href='" . get_bloginfo('home') . "'>$home_page->post_title</a></li>\n"; // home page link
@@ -50,7 +50,7 @@ function get_breadcrumbs(){
 		}
 	}else{
 		// if what we're looking at isn't a page, simply display a home link
-		echo "<li class='breadcrumb-item' id='breadcrumb-0'><a href='" . get_bloginfo('home') . "'>Home</a></li>\n"; // home page link
+		echo "<li class='breadcrumb-item' id='breadcrumb-0'><a href='" . get_bloginfo('home') . "'>Ullerup Sogn</a></li>\n"; // home page link
 	}
 }
 
@@ -340,4 +340,3 @@ $defaults = array(
 );
 add_theme_support( 'custom-header', $defaults );
 ?>
-

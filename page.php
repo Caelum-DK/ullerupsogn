@@ -3,7 +3,12 @@
 		<!-- Row for main content area -->
 		<div class="page-title">
 			<h1><?php the_title(); ?></h1>
-			<h2><?php get_breadcrumbs(); ?></h2>
+			<div id="breadcrumbs">
+				<ul>
+					<?php get_breadcrumbs(); ?>
+				</ul>
+			</div>
+			
 		</div>
 
 		<div id="content" class="nine columns">
