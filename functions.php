@@ -19,6 +19,8 @@ function reverie_setup() {
 }
 add_action('after_setup_theme', 'reverie_setup');
 
+add_image_size( 'page-header', 705, 225, true ); // 705 pixels wide by 225 pixels tall, hard crop mode
+
 // Breadcrumbs function
 function get_breadcrumbs(){
 	global $post;
@@ -126,7 +128,7 @@ add_action( 'init', 'reverie_scripts' );
 
 // Control exerpt length etc.
 function custom_excerpt_length( $length ) {
-	return 36;
+	return 32;
 }
 add_filter( 'excerpt_length', 'custom_excerpt_length', 999 );
 
@@ -146,20 +148,30 @@ foreach ($sidebars as $sidebar) {
 		'after_title' => '</h4>'
 	));
 }
+$sidebars = array('Blog-sidebar');
+foreach ($sidebars as $sidebar) {
+	register_sidebar(array('name'=> $sidebar,
+		'before_widget' => '<article id="%1$s" class="row widget %2$s"><div class="sidebar-section">',
+		'after_widget' => '</div></article>',
+		'before_title' => '<h4>',
+		'after_title' => '</h4>'
+	));
+}
 $sidebars = array('Footer');
 foreach ($sidebars as $sidebar) {
 	register_sidebar(array('name'=> $sidebar,
-		'before_widget' => '<article id="%1$s" class="four columns widget %2$s"><div class="footer-section">',
+		'before_widget' => '<article id="%1$s" class="three columns widget %2$s"><div class="footer-section">',
 		'after_widget' => '</div></article>',
-		'before_title' => '<h6><strong>',
-		'after_title' => '</strong></h6>'
+		'before_title' => '<h6>',
+		'after_title' => '</h6>'
 	));
 }
 
 // return entry meta information for posts, used by multiple loops.
 function reverie_entry_meta() {
 	echo '<time class="updated" datetime="'. get_the_time('c') .'" pubdate>'. sprintf(__('Skrevet %s', 'reverie'), get_the_time('l, j F, Y'), get_the_time()) . '</time>';
-	echo ''. __(' af', 'reverie') .' <a href="'. get_author_posts_url(get_the_author_meta('ID')) .'" rel="author" class="fn">'. get_the_author() .'</a>';
+	echo ''. __(' af ', 'reverie') . get_the_author() .' i ';
+	echo the_category("");
 }
 
 /* Customized the output of caption, you can remove the filter to restore back to the WP default output. Courtesy of DevPress. http://devpress.com/blog/captions-in-wordpress/ */

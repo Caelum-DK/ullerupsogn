@@ -16,7 +16,7 @@
 		 <?php endif; ?>
 		<header>
 			<h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
-			<div class="post_meta_info"><?php reverie_entry_meta(); ?></div>
+			<?php reverie_entry_meta(); ?>
 		</header>
 		<div class="entry-content">			
 	<?php if (is_archive() || is_search()) : // Only display excerpts for archives and search ?>

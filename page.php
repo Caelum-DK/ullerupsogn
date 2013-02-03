@@ -22,7 +22,7 @@
 							( /* $src, $width, $height */ $image = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), array( $header_image_width, $header_image_width ) ) ) &&
 							$image[1] >= $header_image_width ) :
 						// Houston, we have a new header image!
-						echo get_the_post_thumbnail( $post->ID, 'full' );
+						echo get_the_post_thumbnail( $post->ID, 'page-header' );
 					else :
 						// Compatibility with versions of WordPress prior to 3.4.
 						if ( function_exists( 'get_custom_header' ) ) {
