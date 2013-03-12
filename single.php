@@ -6,7 +6,7 @@
 			<div id="breadcrumbs">
 				<ul>
 					<li class="breadcrumb-item"><a href="<?php bloginfo('home'); ?>">Ullerup Sogn</a></li>
-					<li class="breadcrumb-item spacer"><?php the_category('') ?></li>
+					<li class="breadcrumb-item spacer cat"><?php the_category('') ?></li>
 					<li class="breadcrumb-item spacer"><?php the_title(); ?></li>
 				</ul>
 			</div>

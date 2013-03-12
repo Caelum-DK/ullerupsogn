@@ -57,11 +57,6 @@
 <?php else : // this is displayed if there are no comments so far ?>
 	<?php if ( comments_open() ) : ?>
 	<?php else : // comments are closed ?>
-	<section id="comments">
-		<div class="notice">
-			<p class="bottom"><?php _e('Der er lukket for kommentarer.', 'reverie') ?></p>
-		</div>
-	</section>
 	<?php endif; ?>
 <?php endif; ?>
 <?php if ( comments_open() ) : ?>
@@ -76,11 +71,11 @@
 		<p><?php printf(__('Logget ind som <a href="%s/wp-admin/profile.php">%s</a>.', 'reverie'), get_option('siteurl'), $user_identity); ?> <a href="<?php echo wp_logout_url(get_permalink()); ?>" title="<?php __('Log out of this account', 'reverie'); ?>"><?php _e('Log ud &raquo;', 'reverie'); ?></a></p>
 		<?php else : ?>
 		<p>
-			<label for="author"><?php _e('Navn', 'reverie'); if ($req) _e(' (required)', 'reverie'); ?></label>
+			<label for="author"><?php _e('Navn', 'reverie'); if ($req) _e(' (påkrævet)', 'reverie'); ?></label>
 			<input type="text" class="five" name="author" id="author" value="<?php echo esc_attr($comment_author); ?>" size="22" tabindex="1" <?php if ($req) echo "aria-required='true'"; ?>>
 		</p>
 		<p>
-			<label for="email"><?php _e('Email (will not be published)', 'reverie'); if ($req) _e(' (required)', 'reverie'); ?></label>
+			<label for="email"><?php _e('Email', 'reverie'); if ($req) _e(' (påkrævet)', 'reverie'); ?></label>
 			<input type="text" class="five" name="email" id="email" value="<?php echo esc_attr($comment_author_email); ?>" size="22" tabindex="2" <?php if ($req) echo "aria-required='true'"; ?>>
 		</p>
 		<p>

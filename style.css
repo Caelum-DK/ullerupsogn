@@ -201,5 +201,6 @@ License URI:        ja
     #breadcrumbs ul li a { color: #fff; }
 
     #breadcrumbs ul li.spacer:before { content: "»"; float: left; margin-right: 5px;}
+    .single-ai1ec_event #breadcrumbs ul li.spacer.cat:before { display: none;}
     #breadcrumbs ul li ul { margin-left: 0; float: left;}
     #breadcrumbs ul li ul li { margin-right: 0;}
